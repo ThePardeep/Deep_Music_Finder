@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:deepmusicfinder/deepmusicfinder.dart';
 
 import 'package:permission_handler/permission_handler.dart';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatefulWidget {
@@ -13,85 +14,80 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
-  Map<dynamic,dynamic> albumArt = {};
-  List<Map<dynamic,dynamic>>  songsList = [];
+  Map<dynamic, dynamic> albumArt = {};
+  List<Map<dynamic, dynamic>> songsList = [];
   @override
   void initState() {
     super.initState();
     initPlatformState();
   }
 
-
   Future<void> initPlatformState() async {
-
     this.per();
-
   }
 
-
   void per() {
-
-      PermissionHandler()
-          .checkPermissionStatus(PermissionGroup.storage)
-          .then((checkPermissionStatus) async {
-        if (checkPermissionStatus == PermissionStatus.granted) {
-
-          try  {
-            dynamic data = await Deepmusicfinder.fetchSong;
-            print(data);
-            setState(() {
-              albumArt = Map.from(data["AlbumsData"]);
-              songsList = List.from(data["SongsData"]);
-            });
-
-          } catch(e) {
-            print(e);
+    PermissionHandler()
+        .checkPermissionStatus(PermissionGroup.storage)
+        .then((checkPermissionStatus) async {
+      if (checkPermissionStatus == PermissionStatus.granted) {
+        try {
+          dynamic result = await Deepmusicfinder.fetchSong;
+          if (result["error"] == true) {
+            print(result["errorMsg"]);
+            return;
           }
 
-        } else {
-          PermissionHandler().requestPermissions(
-              [PermissionGroup.storage]).then((reqPermissions) async {
+          dynamic data = result["songs"];
 
-
-            if (reqPermissions[PermissionGroup.storage] ==
-                PermissionStatus.granted) {
-
-              try {
-                dynamic data = await Deepmusicfinder.fetchSong;
-                print(data);
-                setState(() {
-                  albumArt = Map.from(data["AlbumsData"]);
-                  songsList = List.from(data["SongsData"]);
-                });
-
-              } on PlatformException {
-                print("Error");
+          setState(() {
+            albumArt = Map.from(data["AlbumsData"]);
+            songsList = List.from(data["SongsData"]);
+          });
+        } catch (e) {
+          print(e);
+        }
+      } else {
+        PermissionHandler().requestPermissions([PermissionGroup.storage]).then(
+            (reqPermissions) async {
+          if (reqPermissions[PermissionGroup.storage] ==
+              PermissionStatus.granted) {
+            try {
+              dynamic result = await Deepmusicfinder.fetchSong;
+              if (result["error"] == true) {
+                print(result["errorMsg"]);
+                return;
               }
 
+              dynamic data = result["songs"];
+
+              setState(() {
+                albumArt = Map.from(data["AlbumsData"]);
+                songsList = List.from(data["SongsData"]);
+              });
+            } on PlatformException {
+              print("Error");
             }
-          });
-        }
-      });
+          }
+        });
+      }
+    });
   }
 
   Widget buildLeading(id) {
-
     String url = albumArt[int.parse(id)];
     print(url);
-    if(url == null) {
+    if (url == null) {
       return Icon(Icons.library_music);
     }
     return Image.asset(url);
   }
 
-  Widget songBuilder(BuildContext context,int index) {
-
+  Widget songBuilder(BuildContext context, int index) {
     return ListTile(
       title: Text(songsList[index]["title"]),
       leading: buildLeading(songsList[index]["albumArtColumn"]),
     );
-
   }
 
   @override
@@ -102,7 +98,10 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          child: ListView.builder(itemBuilder: songBuilder,itemCount: songsList.length,),
+          child: ListView.builder(
+            itemBuilder: songBuilder,
+            itemCount: songsList.length,
+          ),
         ),
       ),
     );
