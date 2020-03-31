@@ -8,17 +8,22 @@ class Deepmusicfinder {
 
   static Future<dynamic> get fetchSong async {
     dynamic  songs;
+    bool error = false;
+    dynamic errorMsg;
     try {
+
        songs = await _channel.invokeMethod("fetchSong");
 
     } catch (err) {
 
-      songs = {
-        "error" : true,
-        "err" : err
-      }
+        error = true;
+        errorMsg = err;
 
     }
-    return songs;
+    return {
+      "songs" : songs,
+      "error" : error,
+      "errorMsg":errorMsg
+    };
   }
 }

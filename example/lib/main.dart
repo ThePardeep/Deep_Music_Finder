@@ -26,18 +26,6 @@ class _MyAppState extends State<MyApp> {
   Future<void> initPlatformState() async {
 
     this.per();
-    try {
-      dynamic data = await Deepmusicfinder.fetchSong;
-      print(data);
-      setState(() {
-      albumArt = Map.from(data["AlbumsData"]);
-      songsList = List.from(data["SongsData"]);
-      });
-
-    } on PlatformException {
-      print("Error");
-    }
-
 
   }
 
@@ -46,19 +34,40 @@ class _MyAppState extends State<MyApp> {
 
       PermissionHandler()
           .checkPermissionStatus(PermissionGroup.storage)
-          .then((checkPermissionStatus) {
+          .then((checkPermissionStatus) async {
         if (checkPermissionStatus == PermissionStatus.granted) {
-          // FetchSongs fetch = new FetchSongs(setSongs);
-          // fetch.start(path);
+
+          try  {
+            dynamic data = await Deepmusicfinder.fetchSong;
+            print(data);
+            setState(() {
+              albumArt = Map.from(data["AlbumsData"]);
+              songsList = List.from(data["SongsData"]);
+            });
+
+          } catch(e) {
+            print(e);
+          }
 
         } else {
           PermissionHandler().requestPermissions(
-              [PermissionGroup.storage]).then((reqPermissions) {
-            // FetchSongs fetch = new FetchSongs(setSongs);
+              [PermissionGroup.storage]).then((reqPermissions) async {
+
 
             if (reqPermissions[PermissionGroup.storage] ==
                 PermissionStatus.granted) {
-              // fetch.start(path);
+
+              try {
+                dynamic data = await Deepmusicfinder.fetchSong;
+                print(data);
+                setState(() {
+                  albumArt = Map.from(data["AlbumsData"]);
+                  songsList = List.from(data["SongsData"]);
+                });
+
+              } on PlatformException {
+                print("Error");
+              }
 
             }
           });
