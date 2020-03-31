@@ -7,13 +7,18 @@ class Deepmusicfinder {
       const MethodChannel('deepmusicfinder');
 
   static Future<dynamic> get fetchSong async {
+    dynamic  songs;
     try {
-      final dynamic songs = await _channel.invokeMethod("fetchSong");
-      return songs;
+       songs = await _channel.invokeMethod("fetchSong");
+
     } catch (err) {
 
-      throw err;
+      songs = {
+        "error" : true,
+        "err" : err
+      }
 
     }
+    return songs;
   }
 }

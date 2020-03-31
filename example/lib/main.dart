@@ -27,7 +27,7 @@ class _MyAppState extends State<MyApp> {
 
     this.per();
     try {
-      dynamic data = await Deepmusicfinder.pp;
+      dynamic data = await Deepmusicfinder.fetchSong;
       print(data);
       setState(() {
       albumArt = Map.from(data["AlbumsData"]);

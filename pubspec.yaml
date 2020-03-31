@@ -1,8 +1,8 @@
 name: deepmusicfinder
 description: Plugin To Fecth Songs And Songs MetaData From Storage
-version: 0.0.1
-author:  Pardeep saini
-homepage:
+version: 0.1.1
+author:  pardeep saini
+homepage: https://github.com/ThePardeep/Deep_Music_Finder.git
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
