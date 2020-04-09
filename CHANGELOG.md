@@ -1,3 +1,5 @@
 ## 0.1.2 [Fix Bugs]
 
-* TODO: Describe initial release.
+## 0.1.3 [Add Media Player Features]
+
+
